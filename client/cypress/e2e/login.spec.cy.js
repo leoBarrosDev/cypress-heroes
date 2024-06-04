@@ -11,6 +11,7 @@ describe('Login Tests', () => {
     it('should to access with test user ', () => {
         cy.login(example.email_test, example.password)
         cy.contains('Logout').should('be.visible')
+        cy.logout()
     })
     it('should to access with admin user ', () => {
         cy.login(example.email_admin, example.password)
