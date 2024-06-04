@@ -25,31 +25,49 @@
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
 //
+
 declare namespace Cypress {
     interface Chainable {
         login(email: string, password: string): Chainable<void>
         logout(): Chainable<void>
         drag(subject: string, options?: Partial<TypeOptions>): Chainable<Element>
         dismiss(subject: string, options?: Partial<TypeOptions>): Chainable<Element>
+        restoreSession(username: string, password: string): Chainable<void>
         //visit(originalFn: CommandOriginalFn, url: string, options: Partial<VisitOptions>): Chainable<Element>
     }
 }
 
-
 Cypress.Commands.add('login', (username: string, password: string) => {
+    cy.visit('/')
     cy.get('.gap-8').eq(0)
         .click()
     cy.get("[type='email']")
         .should('be.visible')
         .type(username)
-    //.type('test@test.com')
     cy.get("[name='password']", { log: false })
         .should('be.visible')
         .type(password)
-    //.type('test123')
     cy.get('body')
         .contains('Sign in')
         .click()
+})
+
+Cypress.Commands.add('restoreSession', (username: string, password: string) => {
+    cy.session([username, password], () => {
+        cy.visit('/')
+        cy.get('.gap-8').eq(0)
+            .click()
+        cy.get("[type='email']")
+            .should('be.visible')
+            .type(username)
+        cy.get("[name='password']", { log: false })
+            .should('be.visible')
+            .type(password)
+        cy.get('body')
+            .contains('Sign in')
+            .click()
+        cy.contains('Logout').should('be.visible')
+    })
 })
 
 Cypress.Commands.add('logout', () => {
